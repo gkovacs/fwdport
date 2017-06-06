@@ -1,0 +1,33 @@
+{
+  "name": "fwdport",
+  "version": "1.0.0",
+  "description": "command to simplify port forwarding via ssh -L",
+  "main": "bin/fwdport",
+  "bin": {
+    "fwdport": "./bin/fwdport"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gkovacs/fwdport.git"
+  },
+  "keywords": [
+    "ssh",
+    "port",
+    "forward",
+    "forwarding",
+    "port",
+    "forwarding"
+  ],
+  "author": "Geza Kovacs (http://github.com/gkovacs)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gkovacs/fwdport/issues"
+  },
+  "homepage": "https://github.com/gkovacs/fwdport#readme",
+  "dependencies": {
+    "yamlfile": "^1.0.1"
+  }
+}
