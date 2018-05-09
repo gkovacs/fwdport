@@ -43,7 +43,7 @@
       var i$, ref$, len$, results$ = [];
       for (i$ = 0, len$ = (ref$ = ports_to_forward).length; i$ < len$; ++i$) {
         portnum = ref$[i$];
-        results$.push("-L " + portnum + ":localhost:" + portnum);
+        results$.push("-R 0.0.0.0:" + portnum + ":localhost:" + portnum);
       }
       return results$;
     }()).join(' ') + " " + host;
