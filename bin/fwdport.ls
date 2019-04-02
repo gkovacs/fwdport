@@ -24,15 +24,28 @@ do ->
 
   ports_to_forward = []
   for x in process.argv[2 to]
-    portnum = parseInt x
-    if isNaN portnum
+    if x.includes('help')
       console.log 'arguments must be integers (the ports to forward)'
       console.log 'received arguments:'
       console.log process.argv
       console.log 'expected arguments (example):'
-      console.log [process.argv[0], '8080', '5000'].join(' ')
+      console.log [process.argv[1], '8080', '5000'].join(' ')
+      console.log 'can also include host name (example):'
+      console.log [process.argv[1], '8080', 'dell'].join(' ')
+      console.log 'can also include pairs of origin:target (example):'
+      console.log [process.argv[1], '8080:8889', 'dell'].join(' ')
       return
-    ports_to_forward.push portnum
-  ssh_command = "ssh " + ["-L #{portnum}:localhost:#{portnum}" for portnum in ports_to_forward].join(' ') + " " + host
+    if x.includes(':')
+      [portnum_origin, portnum_target] = x.split(':')
+      portnum_origin = parseInt portnum_origin
+      portnum_target = parseInt portnum_target
+      ports_to_forward.push [portnum_origin, portnum_target]
+      continue
+    if isNaN x
+      host = x
+      continue
+    portnum_origin = parseInt x
+    ports_to_forward.push [portnum_origin, portnum_origin]
+  ssh_command = "ssh " + ["-L #{portnum_target}:localhost:#{portnum_origin}" for [portnum_origin, portnum_target] in ports_to_forward].join(' ') + " " + host
   console.log ssh_command
   execSync ssh_command, {stdio: 'inherit'}

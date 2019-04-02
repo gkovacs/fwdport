@@ -1,6 +1,6 @@
 {
   "name": "fwdport",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "command to simplify port forwarding via ssh -L",
   "main": "bin/fwdport",
   "bin": {

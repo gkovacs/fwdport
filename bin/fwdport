@@ -9,7 +9,7 @@
   execSync = require('child_process').execSync;
   homedir = os.homedir();
   (function(){
-    var config_file_path, config_data, host, ports_to_forward, i$, ref$, len$, x, portnum, ssh_command;
+    var config_file_path, config_data, host, ports_to_forward, i$, ref$, len$, x, ref1$, portnum_origin, portnum_target, ssh_command;
     config_file_path = path.join(homedir, '.fwdport.yaml');
     if (!fs.existsSync(config_file_path)) {
       console.log('need file ' + config_file_path);
@@ -28,22 +28,37 @@
     ports_to_forward = [];
     for (i$ = 0, len$ = (ref$ = slice$.call(process.argv, 2)).length; i$ < len$; ++i$) {
       x = ref$[i$];
-      portnum = parseInt(x);
-      if (isNaN(portnum)) {
+      if (x.includes('help')) {
         console.log('arguments must be integers (the ports to forward)');
         console.log('received arguments:');
         console.log(process.argv);
         console.log('expected arguments (example):');
-        console.log([process.argv[0], '8080', '5000'].join(' '));
+        console.log([process.argv[1], '8080', '5000'].join(' '));
+        console.log('can also include host name (example):');
+        console.log([process.argv[1], '8080', 'dell'].join(' '));
+        console.log('can also include pairs of origin:target (example):');
+        console.log([process.argv[1], '8080:8889', 'dell'].join(' '));
         return;
       }
-      ports_to_forward.push(portnum);
+      if (x.includes(':')) {
+        ref1$ = x.split(':'), portnum_origin = ref1$[0], portnum_target = ref1$[1];
+        portnum_origin = parseInt(portnum_origin);
+        portnum_target = parseInt(portnum_target);
+        ports_to_forward.push([portnum_origin, portnum_target]);
+        continue;
+      }
+      if (isNaN(x)) {
+        host = x;
+        continue;
+      }
+      portnum_origin = parseInt(x);
+      ports_to_forward.push([portnum_origin, portnum_origin]);
     }
     ssh_command = "ssh " + (function(){
-      var i$, ref$, len$, results$ = [];
+      var i$, ref$, len$, ref1$, results$ = [];
       for (i$ = 0, len$ = (ref$ = ports_to_forward).length; i$ < len$; ++i$) {
-        portnum = ref$[i$];
-        results$.push("-L " + portnum + ":localhost:" + portnum);
+        ref1$ = ref$[i$], portnum_origin = ref1$[0], portnum_target = ref1$[1];
+        results$.push("-L " + portnum_target + ":localhost:" + portnum_origin);
       }
       return results$;
     }()).join(' ') + " " + host;
