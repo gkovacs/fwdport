@@ -17,7 +17,7 @@ do ->
   if not config_data?
     console.log 'file ' + config_file_path + ' is not a valid YAML or JSON file'
     return
-  {host} = config_data
+  {host, port} = config_data
   if not host?
     console.log 'file ' + config_file_path + ' is missing field "host"'
     return
@@ -33,6 +33,9 @@ do ->
       console.log [process.argv[0], '8080', '5000'].join(' ')
       return
     ports_to_forward.push portnum
-  ssh_command = "ssh " + ["-R 0.0.0.0:#{portnum}:localhost:#{portnum}" for portnum in ports_to_forward].join(' ') + " " + host
+  ssh_command = "ssh "
+  if port?
+    ssh_command += '-p ' + port + ' '
+  ssh_command += ["-R 0.0.0.0:#{portnum}:localhost:#{portnum}" for portnum in ports_to_forward].join(' ') + " " + host
   console.log ssh_command
   execSync ssh_command, {stdio: 'inherit'}
